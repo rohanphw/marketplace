@@ -10,7 +10,7 @@ import{
     nftaddress,nftmarketaddress
 } from '../config'
 
-import nft from '../artifacts/contracts/NFT.sol/NFT.json'
+import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json'
 
 export default function CreateItem() {
@@ -50,27 +50,28 @@ export default function CreateItem() {
         }
     }
 
-    async function createSale() {
-        const web3Modal = new web3Modal()
+    async function createSale(url) {
+        const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
+        const provider = new ethers.providers.Web3Provider(connection)    
         const signer = provider.getSigner()
         
+        /* next, create the item */
         let contract = new ethers.Contract(nftaddress, NFT.abi, signer)
         let transaction = await contract.createToken(url)
         let tx = await transaction.wait()
-
         let event = tx.events[0]
         let value = event.args[2]
         let tokenId = value.toNumber()
-
+    
         const price = ethers.utils.parseUnits(formInput.price, 'ether')
-
-        contract= new ethers.Contract(nftmarketaddress, NFT.abi, signer) 
+      
+        /* then list the item for sale on the marketplace */
+        contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
         let listingPrice = await contract.getListingPrice()
         listingPrice = listingPrice.toString()
-
-        transaction = await contract.createMarketItem(nftaddress, tokenId, price, {value: listingPrice})
+    
+        transaction = await contract.createMarketItem(nftaddress, tokenId, price, { value: listingPrice })
         await transaction.wait()
         router.push('/')
     }
