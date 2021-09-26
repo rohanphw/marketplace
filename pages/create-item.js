@@ -30,7 +30,7 @@ export default function CreateItem() {
             const url= 'https://ipfs.infura.io/ipfs/${added.path}'
             setFileUrl(url)
         } catch(e){
-            console.log(e)
+            console.log("Error :", e)
         }
     }
 
