@@ -2,12 +2,13 @@ import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Web3Modal from "web3modal"
+
 import {
   nftaddress, nftmarketaddress
 } from '../config'
 
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
-import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json'
+import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
 
 export default function Home() {
   const [nfts, setNfts] = useState([])
@@ -15,7 +16,6 @@ export default function Home() {
   useEffect(() => {
     loadNFTs()
   }, [])
-
   async function loadNFTs() {    
     const provider = new ethers.providers.JsonRpcProvider()
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
@@ -40,7 +40,6 @@ export default function Home() {
     setNfts(items)
     setLoadingState('loaded') 
   }
-  
   async function buyNft(nft) {
     const web3Modal = new Web3Modal()
     const connection = await web3Modal.connect()
@@ -58,7 +57,7 @@ export default function Home() {
   if (loadingState === 'loaded' && !nfts.length) return (<h1 className="px-20 py-10 text-3xl">No items in marketplace</h1>)
   return (
     <div className="flex justify-center">
-      <div className="px-4" style={{ maxWidth: '1600px'  }}>
+      <div className="px-4" style={{ maxWidth: '1600px' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {
             nfts.map((nft, i) => (
